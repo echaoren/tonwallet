@@ -14,7 +14,11 @@ async function generateWallet() {
     } catch (jsonError) {
       // 捕获 JSON 解析错误
       console.error('解析 JSON 时出错:', jsonError);
-      console.error('响应内容不是有效的 JSON:', text);
+      if (text.includes('An error occurred')) {
+        console.error('API 返回了错误信息:', text);
+      } else {
+        console.error('响应内容不是有效的 JSON:', text);
+      }
     }
   } catch (fetchError) {
     // 捕获其他错误

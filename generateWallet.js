@@ -1,29 +1,19 @@
-const fetch = require('node-fetch');
+const TonWeb = require('tonweb');
+const nacl = TonWeb.utils.nacl;
 
-async function generateWallet() {
+async function generateWallet(walletCount = 1) {
   try {
-    const response = await fetch('https://api.example.com/generate-wallet');
-    const text = await response.text(); // 先将响应转换为文本
-
-    console.log('API 响应内容:', text); // 打印 API 响应内容
-
-    try {
-      const data = JSON.parse(text); // 尝试解析 JSON
-      // 处理 JSON 数据
-      console.log('钱包生成成功:', data);
-    } catch (jsonError) {
-      // 捕获 JSON 解析错误
-      console.error('解析 JSON 时出错:', jsonError);
-      if (text.includes('An error occurred')) {
-        console.error('API 返回了错误信息:', text);
-      } else {
-        console.error('响应内容不是有效的 JSON:', text);
-      }
+    const wallets = [];
+    for (let i = 0; i < walletCount; i++) {
+      const keyPair = nacl.sign.keyPair();
+      const publicKey = TonWeb.utils.bytesToHex(keyPair.publicKey);
+      const secretKey = TonWeb.utils.bytesToHex(keyPair.secretKey);
+      wallets.push({ publicKey, secretKey });
     }
-  } catch (fetchError) {
-    // 捕获其他错误
-    console.error('请求时出错:', fetchError);
+    console.log('钱包生成成功:', wallets);
+  } catch (error) {
+    console.error('生成钱包时出错:', error);
   }
 }
 
-generateWallet();
+generateWallet(20); // 生成 20 个钱包
